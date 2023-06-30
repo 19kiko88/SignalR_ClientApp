@@ -8,13 +8,18 @@ import { environment } from 'src/environments/environment';
 
 export class SignalrService {
 
-  private hubConn: signalR.HubConnection | undefined
-  private url: string = `${environment.apiBaseUrl}`;
-  
+  hubConn: signalR.HubConnection | undefined
+  url: string = `${environment.apiBaseUrl}`;
+
   constructor() { }
 
+  //建立SignalR 連線   
   public startConnection = () => {
-    this.hubConn = new signalR.HubConnectionBuilder().withUrl(`${this.url}/SignalR/Get`).build();
+
+    //建立SignalR Hub 連線，withUrl的參數要跟
+    this.hubConn = new signalR.HubConnectionBuilder().withUrl(`${this.url}/myHub`).build();
+
+    //開始連線
     this.hubConn.start()
     .then(() => {
       console.log('signalr connection start');
@@ -24,5 +29,12 @@ export class SignalrService {
         console.log(err);
       }
     )
+  }
+
+  //監聽要接收推播的SignalR Method
+  public addMethodListener = () => {   
+    this.hubConn?.on('GetRandomNumber', (data) => {
+      console.log(data);
+    })
   }
 }

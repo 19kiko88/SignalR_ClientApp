@@ -20,12 +20,20 @@ export class HomeComponent implements OnInit {
     //建立SignalR 連線    
     this._signalrService.startConnection();
 
-    //開始監聽要訂閱的SignalR Hub Method(GetRandomNumber)
+    //監聽Hub Method [HubMethodGetRandomNumber]並取得結果
     this._signalrService.addMethodListener();
 
-    //訂閱Hub Method
+    //透過呼叫api，調用Hub Method [HubMethodGetRandomNumber]，並取得結果
     this._http.get<any>(`${environment.apiBaseUrl}/api/SignalR/Subscribe`).subscribe(res => {       
       console.log(res.message);
     })
+
+    //監聽Hub Method [HubMethodGetRandomNumber]並取得結果
+    this._signalrService.broadcastMethodListener();
+  }
+
+  //發送廣播訊息
+  broadcastMessage(): void{
+    this._signalrService.broadcastMessage("1111");
   }
 }

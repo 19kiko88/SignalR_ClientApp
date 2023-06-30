@@ -7,7 +7,7 @@ import { environment } from 'src/environments/environment';
 })
 
 export class SignalrService {
-
+  public broadcastMsg: string = '';
   hubConn: signalR.HubConnection | undefined
   url: string = `${environment.apiBaseUrl}`;
 
@@ -31,9 +31,25 @@ export class SignalrService {
     )
   }
 
-  //監聽要接收推播的SignalR Method
+  //監聽Hub Method [HubMethodGetRandomNumber]並取得結果
   public addMethodListener = () => {   
-    this.hubConn?.on('GetRandomNumber', (data) => {
+    this.hubConn?.on('HubMethodGetRandomNumber', (data) => {
+      console.log(data);
+    })
+  }
+
+  //透過調用server端MyHub的BraodCast方法，來調用Hub Method [HubMethodBroadcast]
+  public broadcastMessage(msg: string): void{
+    this.hubConn?.invoke('BraodCast', msg)
+    .catch(err => {
+      console.error(err);
+    })
+  }
+
+  //監聽Hub Method [HubMethodBroadcast]並取得結果
+  public broadcastMethodListener(): void{
+    this.hubConn?.on('HubMethodBroadcast', (data) => {
+      this.broadcastMsg = data;
       console.log(data);
     })
   }
